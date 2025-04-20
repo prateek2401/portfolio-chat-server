@@ -6,15 +6,19 @@ const cors = require('cors');
 require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
+// Add this near the top after your imports
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "http://localhost:3000").split(",");
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ALLOWED_ORIGINS,
     credentials: true
   }
 });
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: ALLOWED_ORIGINS,
   credentials: true
 }));
 
@@ -58,7 +62,7 @@ io.on('connection', (socket) => {
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Session ID:</strong> ${sessionId}</p>
-          <p><a href="http://localhost:3000?session=${sessionId}">Click here to respond to this chat</a></p>
+          <p><a href="${CLIENT_URL}?session=${sessionId}">Click here to respond to this chat</a></p>
         `
       };
       
@@ -91,7 +95,7 @@ io.on('connection', (socket) => {
           subject: 'New Chat Message from Portfolio Website',
           html: `
             <p><strong>New message:</strong> ${message.text}</p>
-            <p><a href="http://localhost:3000?session=${sessionId}">Click here to respond to this chat</a></p>
+            <p><a href="${CLIENT_URL}?session=${sessionId}">Click here to respond to this chat</a></p>
           `
         };
 
